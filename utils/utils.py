@@ -7,7 +7,7 @@ from pathlib import Path
 from utils.constants import WEBSITE_TESTS
 
 
-def init_logger(cls, log_file_name='run.log', file_log_level=logging.INFO, screen_log_level=logging.INFO):
+def init_logger(cls, log_file_name='run.log', file_log_level=logging.DEBUG, screen_log_level=logging.DEBUG):
     # TODO handle log format
     log = logging.getLogger(cls)
     log.setLevel(logging.DEBUG)

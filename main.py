@@ -14,9 +14,13 @@ class WebsiteTester:
             logger.info(f'starting checks for {website_domain}')
             for protocol, protocol_tests in website_tests_conf.items():
                 logger.info(f'starting checks for {website_domain} {protocol} protocol')
-                # TODO check if protocol package exists
+                if protocol not in self.protocol_tests_mapping:
+                    logger.warning(f"{protocol} protocol tests don't exist")
+                    continue
                 for test, test_conf in protocol_tests.items():
-                    # TODO check if function exists
+                    if test not in self.protocol_tests_mapping[protocol]:
+                        logger.warning(f"test {test} doesn't exist for protocol {protocol}")
+                        continue
                     logger.info(f'starting {test} check for {website_domain} {protocol} protocol')
                     test_method = self.protocol_tests_mapping[protocol][test]
                     test_passed = test_method(website_domain, **test_conf)
