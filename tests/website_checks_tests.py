@@ -21,6 +21,14 @@ class HttpChecksTests(unittest.TestCase):
         self.assertEqual(TestStatus.FAILURE, res.status)
 
 
+class HttpsChecksTests(unittest.TestCase):
+    def test_http_latency(self):
+        res = latency('google.com')
+        self.assertEqual(TestStatus.SUCCESS, res.status)
+        res = resolve('goosdfsfgle.com')
+        self.assertEqual(TestStatus.FAILURE, res.status)
+
+
 if __name__ == '__main__':
     unittest.main()
 
