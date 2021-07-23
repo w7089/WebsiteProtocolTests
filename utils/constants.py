@@ -1,0 +1,1 @@
+WEBSITE_TESTS = 'website_tests'

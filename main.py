@@ -1,17 +1,24 @@
 import json
 
 from utils import utils
+from utils.utils import create_protocol_tests_mapping
 
-
+# TODO configure logger by cmd arg
 class WebsiteTester:
+    def __init__(self):
+        self.protocol_tests_mapping = create_protocol_tests_mapping()
 
     def run_website_tests(self, config):
         for website_domain, website_tests_conf in config.items():
             logger.info(f'starting checks for {website_domain}')
             for protocol, protocol_tests in website_tests_conf.items():
                 logger.info(f'starting checks for {website_domain} {protocol} protocol')
+                # TODO check if protocol package exists
                 for test, test_conf in protocol_tests.items():
+                    # TODO check if function exists
                     logger.info(f'starting {test} check for {website_domain} {protocol} protocol')
+                    test_method = self.protocol_tests_mapping[test]
+                    res = test_method(website_domain, **test_conf)
                     logger.info(f'finishing {test} check for {website_domain} {protocol} protocol')
                 logger.info(f'finishing checks for {website_domain} {protocol} protocol')
             logger.info(f'finishing checks for {website_domain}')
