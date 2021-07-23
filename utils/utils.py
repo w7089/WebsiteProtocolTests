@@ -4,6 +4,8 @@ import logging
 import os
 from pathlib import Path
 
+import coloredlogs
+
 from utils.constants import WEBSITE_TESTS
 
 
@@ -23,6 +25,7 @@ def init_logger(cls, log_file_name='run.log', file_log_level=logging.DEBUG, scre
     ch.setFormatter(formatter)
     log.addHandler(ch)
     logger = logging.getLogger(cls)
+    coloredlogs.install(level='DEBUG', logger=logger, fmt='%(asctime)s %(levelname)s %(message)s')
     return logger
 
 

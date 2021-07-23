@@ -11,9 +11,9 @@ class WebsiteTester:
 
     def run_website_tests(self, config):
         for website_domain, website_tests_conf in config.items():
-            logger.info(f'starting checks for {website_domain}')
+            logger.debug(f'starting checks for {website_domain}')
             for protocol, protocol_tests in website_tests_conf.items():
-                logger.info(f'starting checks for {website_domain} {protocol} protocol')
+                logger.debug(f'starting checks for {website_domain} {protocol} protocol')
                 if protocol not in self.protocol_tests_mapping:
                     logger.warning(f"{protocol} protocol tests don't exist")
                     continue
@@ -21,16 +21,16 @@ class WebsiteTester:
                     if test not in self.protocol_tests_mapping[protocol]:
                         logger.warning(f"test {test} doesn't exist for protocol {protocol}")
                         continue
-                    logger.info(f'starting {test} check for {website_domain} {protocol} protocol')
+                    logger.debug(f'starting {test} check for {website_domain} {protocol} protocol')
                     test_method = self.protocol_tests_mapping[protocol][test]
                     test_passed = test_method(website_domain, **test_conf)
                     if test_passed:
-                        logger.error(f'SUCCESSFUL {protocol} {test} check for {website_domain}')
+                        logger.info(f'SUCCESSFUL {protocol} {test} check for {website_domain}')
                     else:
                         logger.error(f'FAILED {protocol} {test} check for {website_domain}')
-                    logger.info(f'finishing {test} check for {website_domain} {protocol} protocol')
-                logger.info(f'finishing checks for {website_domain} {protocol} protocol')
-            logger.info(f'finishing checks for {website_domain}')
+                    logger.debug(f'finishing {test} check for {website_domain} {protocol} protocol')
+                logger.debug(f'finishing checks for {website_domain} {protocol} protocol')
+            logger.debug(f'finishing checks for {website_domain}')
 
     def read_config(self, config_json='config.json'):
         with open(config_json) as conf_file:
