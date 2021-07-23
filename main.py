@@ -1,10 +1,12 @@
 import json
 
 from utils import utils
+from utils.constants import TestStatus
 from utils.utils import create_protocol_tests_mapping
 
-# TODO configure logger by cmd arg
-# TODO add color to logs
+# TODO configure logger level by cmd arg
+# TODO support custom args for each check
+# TODO don't allow single website exceptions crash entire test
 class WebsiteTester:
     def __init__(self):
         self.protocol_tests_mapping = create_protocol_tests_mapping()
@@ -23,9 +25,9 @@ class WebsiteTester:
                         continue
                     logger.debug(f'starting {test} check for {website_domain} {protocol} protocol')
                     test_method = self.protocol_tests_mapping[protocol][test]
-                    test_passed = test_method(website_domain, **test_conf)
-                    if test_passed:
-                        logger.info(f'SUCCESSFUL {protocol} {test} check for {website_domain}')
+                    test_res = test_method(website_domain, **test_conf)
+                    if test_res.status == TestStatus.SUCCESS:
+                        logger.info(f'SUCCESSFUL {protocol} {test} check for {website_domain}, more details: {test_res.info}')
                     else:
                         logger.error(f'FAILED {protocol} {test} check for {website_domain}')
                     logger.debug(f'finishing {test} check for {website_domain} {protocol} protocol')

@@ -1,8 +1,11 @@
 import socket
 
+from utils.constants import TestResult, TestStatus
+
 
 def resolve(domain_name):
     try:
-        return socket.gethostbyname(domain_name)
+        ip = socket.gethostbyname(domain_name)
+        return TestResult(status=TestStatus.SUCCESS, info=f"resolved ip {ip}")
     except socket.gaierror:
-        return ""
+        return TestResult()
