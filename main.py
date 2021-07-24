@@ -5,13 +5,12 @@ from csv import DictWriter, DictReader
 from pathlib import Path
 
 from utils import utils
-from utils.constants import TestStatus, FIELDS, OUT_FILE_NAME
+from utils.constants import TestStatus, FIELDS, OUT_FILE_NAME, TestResult
 from utils.utils import create_protocol_tests_mapping
 
 
-# TODO support custom args for each check
-# TODO don't allow single website exceptions crash entire test
 # TODO add ts for each run to results store
+# TODO split main function
 
 
 class WebsiteTester:
@@ -37,8 +36,15 @@ class WebsiteTester:
                             continue
                         logger.debug(f'starting {test} check for {website_domain} {protocol} protocol')
                         test_method = self.protocol_tests_mapping[protocol][test]
-                        test_args = test_conf['args'] if 'args' in test_conf else {}
-                        test_res = test_method(website_domain, **test_args)
+                        test_args = test_conf['args'] if 'args' in test_conf else {}  # support custom test args (add them to config file)
+                        # running website check
+                        try:
+                            test_res = test_method(website_domain, **test_args)
+                        except Exception as ex:
+                            # don't allow single website exceptions crash entire script
+                            logger.error(f'exception happened while running {protocol} {test} check for {website_domain}')
+                            logger.exception(ex)
+                            test_res = TestResult()  # fail the test
                         res_row = dict()
                         res_row['domain_name'] = website_domain
                         res_row['protocol'] = protocol
@@ -92,6 +98,7 @@ def keep_max_lines_in_out_file(output_file=OUT_FILE_NAME, max_lines=50):
         return
     with open(output_file, 'w') as out:
         out_writer = DictWriter(out, fieldnames=FIELDS, dialect='excel-tab')
+        out_writer.writeheader()
         out_writer.writerows(rows[-max_lines:])
 
 
@@ -109,5 +116,4 @@ if __name__ == '__main__':
     previous_runs = utils.get_previous_runs()
     latest_runs = tester.run_website_tests(config, previous_runs)
     utils.save_latest_runs(latest_runs)
-    # avoid disk explosion, keep only max lines in output file
-    keep_max_lines_in_out_file()
+    keep_max_lines_in_out_file()  # avoid disk explosion, keep only max lines in output file
