@@ -5,29 +5,28 @@ import logging
 import os
 from collections import defaultdict
 from pathlib import Path
-from pprint import pprint
 
 import coloredlogs
 
 from utils.constants import WEBSITE_TESTS, PREVIOUS_RUNS_JSON
 
 
-def init_logger(cls, log_file_name='run.log', file_log_level=logging.DEBUG, screen_log_level=logging.DEBUG):
+def init_logger(cls, log_file_name='run.log', logging_level=logging.INFO):
     log = logging.getLogger(cls)
-    log.setLevel(logging.DEBUG)
+    log.setLevel(logging_level)
     formatter = logging.Formatter('%(message)s')
 
     fh = logging.FileHandler(log_file_name, mode='a', encoding='utf-8')
-    fh.setLevel(file_log_level)
+    fh.setLevel(logging_level)
     fh.setFormatter(formatter)
     log.addHandler(fh)
 
     ch = logging.StreamHandler()
-    ch.setLevel(screen_log_level)
+    ch.setLevel(logging_level)
     ch.setFormatter(formatter)
     log.addHandler(ch)
     logger = logging.getLogger(cls)
-    coloredlogs.install(level='DEBUG', logger=logger, fmt='%(asctime)s %(levelname)s %(message)s')
+    coloredlogs.install(level=logging_level, logger=logger, fmt='%(asctime)s %(levelname)s %(message)s')
     return logger
 
 

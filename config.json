@@ -9,7 +9,7 @@
       "http":
         {
           "latency": {
-            "threshold" : 0.1,
+            "threshold" : 0.01,
             "args" : {
               "runs" : 1,
               "wait_between_run" : 0.5
@@ -20,7 +20,7 @@
       "https":
         {
           "latency": {
-            "threshold" : 0.1,
+            "threshold" : 0.01,
             "args": {}
           }
         },
@@ -36,7 +36,7 @@
       "http":
         {
           "latency": {
-            "threshold" : 0.1,
+            "threshold" : 0.01,
             "args" : {
               "runs" : 1,
               "wait_between_run" : 0.5
@@ -47,7 +47,34 @@
       "https":
         {
           "latency": {
-            "threshold" : 0.1,
+            "threshold" : 0.01,
+            "args": {}
+          }
+        },
+      "smtp" : {}
+    },
+  "ynet.co.il":
+    {
+      "dns":
+        {
+          "resolve": {}
+        }
+      ,
+      "http":
+        {
+          "latency": {
+            "threshold" : 0.01,
+            "args" : {
+              "runs" : 1,
+              "wait_between_run" : 0.5
+            }
+          }
+        }
+      ,
+      "https":
+        {
+          "latency": {
+            "threshold" : 0.01,
             "args": {}
           }
         },

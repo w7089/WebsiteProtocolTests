@@ -1,5 +1,6 @@
+import argparse
 import json
-from collections import defaultdict
+import logging
 from csv import DictWriter, DictReader
 from pathlib import Path
 
@@ -7,7 +8,7 @@ from utils import utils
 from utils.constants import TestStatus, FIELDS, OUT_FILE_NAME
 from utils.utils import create_protocol_tests_mapping
 
-# TODO configure logger level by cmd arg
+
 # TODO support custom args for each check
 # TODO don't allow single website exceptions crash entire test
 # TODO add ts for each run to results store
@@ -42,21 +43,29 @@ class WebsiteTester:
                         res_row['domain_name'] = website_domain
                         res_row['protocol'] = protocol
                         if test_res.status == TestStatus.SUCCESS:
-                            logger.info(f'SUCCESSFUL {protocol} {test} check for {website_domain}, more details: {test_res.info}')
+                            logger.info(
+                                f'SUCCESSFUL {protocol} {test} check for {website_domain}, more details: {test_res.info}')
                             res_row['test_result'] = 'success'
                             res_row[test] = test_res.val
                             try:
                                 previous_run = previous_runs[website_domain][protocol][test]
                             except KeyError:
                                 previous_run = None
-                            if previous_run and 'threshold' in config[website_domain][protocol][test]:
+                            if previous_run is not None and 'threshold' in config[website_domain][protocol][test]:
                                 website_protocol_test_threshold = config[website_domain][protocol][test]['threshold']
-                                # logger.debug('current run')
-                                # logger.debug('previous_run')
+                                logger.debug(f'{protocol} {test} check for {website_domain} current run result: {test_res.val}')
+                                logger.debug(f'{protocol} {test} check for {website_domain} previous run result: {previous_run}')
                                 if test_res.val - previous_run > website_protocol_test_threshold:
-                                    logger.warning(f'{protocol} {test} check for {website_domain} exceeds previous run by more than configured threshold of {website_protocol_test_threshold} seconds')
+                                    logger.warning(
+                                        f'{protocol} {test} check for {website_domain} exceeds previous run by more than configured threshold of {website_protocol_test_threshold} seconds')
                             else:
-                                previous_runs[website_domain] = utils.rec_dd()
+                                if website_domain not in previous_runs:
+                                    previous_runs[website_domain] = utils.rec_dd()
+                                elif protocol not in previous_runs[website_domain]:
+                                    previous_runs[website_domain][protocol] = utils.rec_dd()
+                                elif test not in previous_runs[website_domain][protocol]:
+                                    previous_runs[website_domain][protocol][test] = utils.rec_dd()
+
                             previous_runs[website_domain][protocol][test] = test_res.val
 
                         else:
@@ -75,7 +84,7 @@ class WebsiteTester:
         return config
 
 
-def keep_max_lines_in_out_file(output_file=OUT_FILE_NAME, max_lines=40):
+def keep_max_lines_in_out_file(output_file=OUT_FILE_NAME, max_lines=50):
     with open(output_file) as out:
         out_reader = DictReader(out, fieldnames=FIELDS, dialect='excel-tab')
         rows = [r for r in out_reader]
@@ -87,8 +96,13 @@ def keep_max_lines_in_out_file(output_file=OUT_FILE_NAME, max_lines=40):
 
 
 if __name__ == '__main__':
-    global logger
-    logger = utils.init_logger(WebsiteTester.__name__)
+    parser = argparse.ArgumentParser(description='Runs different protocol tests on websites according to configuration')
+    parser.add_argument('--verbose', action='store_true', help='dispays debug log messages')
+    args = parser.parse_args()
+    if args.verbose:
+        logger = utils.init_logger(WebsiteTester.__name__, logging_level=logging.DEBUG)
+    else:
+        logger = utils.init_logger(WebsiteTester.__name__)
     tester = WebsiteTester()
     config = tester.read_config()
     # TODO think about relatives paths to module
@@ -97,8 +111,3 @@ if __name__ == '__main__':
     utils.save_latest_runs(latest_runs)
     # avoid disk explosion, keep only max lines in output file
     keep_max_lines_in_out_file()
-
-
-
-
-
