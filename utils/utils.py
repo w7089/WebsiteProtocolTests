@@ -14,7 +14,7 @@ def init_logger(cls, log_file_name='run.log', file_log_level=logging.DEBUG, scre
     log.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(message)s')
 
-    fh = logging.FileHandler(log_file_name, mode='w', encoding='utf-8')
+    fh = logging.FileHandler(log_file_name, mode='a', encoding='utf-8')
     fh.setLevel(file_log_level)
     fh.setFormatter(formatter)
     log.addHandler(fh)
