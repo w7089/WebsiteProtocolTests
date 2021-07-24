@@ -1,6 +1,6 @@
 import json
 from collections import defaultdict
-from csv import DictWriter
+from csv import DictWriter, DictReader
 from pathlib import Path
 
 from utils import utils
@@ -18,7 +18,7 @@ class WebsiteTester:
         self.protocol_tests_mapping = create_protocol_tests_mapping()
 
     def run_website_tests(self, config, previous_runs, output_file=OUT_FILE_NAME):
-        with open(output_file,'a') as out:
+        with open(output_file, 'a') as out:
             out_writer = DictWriter(out, fieldnames=FIELDS, dialect='excel-tab')
             size = Path(OUT_FILE_NAME).stat().st_size
             if size == 0:
@@ -45,13 +45,18 @@ class WebsiteTester:
                             logger.info(f'SUCCESSFUL {protocol} {test} check for {website_domain}, more details: {test_res.info}')
                             res_row['test_result'] = 'success'
                             res_row[test] = test_res.val
-                            previous_run = previous_runs[website_domain][protocol][test]
-                            if type(previous_run) != defaultdict and 'threshold' in config[website_domain][protocol][test]:
+                            try:
+                                previous_run = previous_runs[website_domain][protocol][test]
+                            except KeyError:
+                                previous_run = None
+                            if previous_run and 'threshold' in config[website_domain][protocol][test]:
                                 website_protocol_test_threshold = config[website_domain][protocol][test]['threshold']
                                 # logger.debug('current run')
                                 # logger.debug('previous_run')
                                 if test_res.val - previous_run > website_protocol_test_threshold:
                                     logger.warning(f'{protocol} {test} check for {website_domain} exceeds previous run by more than configured threshold of {website_protocol_test_threshold} seconds')
+                            else:
+                                previous_runs[website_domain] = utils.rec_dd()
                             previous_runs[website_domain][protocol][test] = test_res.val
 
                         else:
@@ -70,6 +75,17 @@ class WebsiteTester:
         return config
 
 
+def keep_max_lines_in_out_file(output_file=OUT_FILE_NAME, max_lines=40):
+    with open(output_file) as out:
+        out_reader = DictReader(out, fieldnames=FIELDS, dialect='excel-tab')
+        rows = [r for r in out_reader]
+    if len(rows) < max_lines:
+        return
+    with open(output_file, 'w') as out:
+        out_writer = DictWriter(out, fieldnames=FIELDS, dialect='excel-tab')
+        out_writer.writerows(rows[-max_lines:])
+
+
 if __name__ == '__main__':
     global logger
     logger = utils.init_logger(WebsiteTester.__name__)
@@ -79,6 +95,10 @@ if __name__ == '__main__':
     previous_runs = utils.get_previous_runs()
     latest_runs = tester.run_website_tests(config, previous_runs)
     utils.save_latest_runs(latest_runs)
+    # avoid disk explosion, keep only max lines in output file
+    keep_max_lines_in_out_file()
+
+
 
 
 

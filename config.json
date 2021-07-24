@@ -25,5 +25,32 @@
           }
         },
       "smtp" : {}
+    },
+  "facebook.com":
+    {
+      "dns":
+        {
+          "resolve": {}
+        }
+      ,
+      "http":
+        {
+          "latency": {
+            "threshold" : 0.1,
+            "args" : {
+              "runs" : 1,
+              "wait_between_run" : 0.5
+            }
+          }
+        }
+      ,
+      "https":
+        {
+          "latency": {
+            "threshold" : 0.1,
+            "args": {}
+          }
+        },
+      "smtp" : {}
     }
 }
