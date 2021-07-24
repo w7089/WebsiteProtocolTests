@@ -10,7 +10,10 @@
         {
           "latency": {
             "threshold" : 0.1,
-            "args" : {}
+            "args" : {
+              "runs" : 1,
+              "wait_between_run" : 0.5
+            }
           }
         }
       ,
