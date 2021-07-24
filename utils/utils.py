@@ -1,12 +1,15 @@
 import importlib
 import inspect
+import json
 import logging
 import os
+from collections import defaultdict
 from pathlib import Path
+from pprint import pprint
 
 import coloredlogs
 
-from utils.constants import WEBSITE_TESTS
+from utils.constants import WEBSITE_TESTS, PREVIOUS_RUNS_JSON
 
 
 def init_logger(cls, log_file_name='run.log', file_log_level=logging.DEBUG, screen_log_level=logging.DEBUG):
@@ -35,3 +38,20 @@ def create_protocol_tests_mapping(websites_tests_package_path=Path(WEBSITE_TESTS
         functions = inspect.getmembers(module, inspect.isfunction)
         mapping[prot_package_name] = dict(functions)
     return mapping
+
+
+def rec_dd():
+    return defaultdict(rec_dd)
+
+
+def get_previous_runs(runs_file_name=PREVIOUS_RUNS_JSON):
+    if Path(runs_file_name).exists():
+        with open(runs_file_name) as runs_file:
+            previous_runs = json.load(runs_file)
+            return previous_runs
+    return rec_dd()
+
+
+def save_latest_runs(latest_runs, latest_runs_file_name=PREVIOUS_RUNS_JSON):
+    with open(latest_runs_file_name, 'w') as latest_runs_out_f:
+        json.dump(latest_runs, latest_runs_out_f, indent=4, sort_keys=True)

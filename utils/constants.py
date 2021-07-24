@@ -3,6 +3,8 @@ from enum import Enum
 
 WEBSITE_TESTS = 'website_tests'
 OUT_FILE_NAME = 'out.tsv'
+PREVIOUS_RUNS_JSON = 'latest_runs.json'
+
 
 class TestStatus(Enum):
     SUCCESS = 0

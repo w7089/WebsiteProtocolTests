@@ -2,3 +2,4 @@
 *.log
 __pycache__
 *.tsv
+/latest_runs.json

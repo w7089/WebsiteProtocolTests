@@ -8,12 +8,18 @@
       ,
       "http":
         {
-          "latency": {}
+          "latency": {
+            "threshold" : 0.1,
+            "args" : {}
+          }
         }
       ,
       "https":
         {
-          "latency": {}
+          "latency": {
+            "threshold" : 0.1,
+            "args": {}
+          }
         },
       "smtp" : {}
     }
