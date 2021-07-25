@@ -1,16 +1,13 @@
 import argparse
 import json
 import logging
+from collections import defaultdict
 from csv import DictWriter, DictReader
 from pathlib import Path
 
 from utils import utils
 from utils.constants import TestStatus, FIELDS, OUT_FILE_NAME, TestResult
 from utils.utils import create_protocol_tests_mapping
-
-
-# TODO add ts for each run to results store
-# TODO split main function
 
 
 class WebsiteTester:
@@ -36,7 +33,7 @@ class WebsiteTester:
                             continue
                         logger.debug(f'starting {test} check for {website_domain} {protocol} protocol')
                         test_method = self.protocol_tests_mapping[protocol][test]
-                        test_args = test_conf['args'] if 'args' in test_conf else {}  # support custom test args (add them to config file)
+                        test_args = test_conf['args'] if 'args' in test_conf else {}  # custom test args (add them to config file)
                         # running website check
                         try:
                             test_res = test_method(website_domain, **test_args)
@@ -57,7 +54,7 @@ class WebsiteTester:
                                 previous_run = previous_runs[website_domain][protocol][test]
                             except KeyError:
                                 previous_run = None
-                            if previous_run is not None and 'threshold' in config[website_domain][protocol][test]:
+                            if previous_run is not None and type(previous_run) != defaultdict and 'threshold' in config[website_domain][protocol][test]:
                                 website_protocol_test_threshold = config[website_domain][protocol][test]['threshold']
                                 logger.debug(f'{protocol} {test} check for {website_domain} current run result: {test_res.val}')
                                 logger.debug(f'{protocol} {test} check for {website_domain} previous run result: {previous_run}')
@@ -90,7 +87,7 @@ class WebsiteTester:
         return config
 
 
-def keep_max_lines_in_out_file(output_file=OUT_FILE_NAME, max_lines=50):
+def keep_max_lines_in_out_file(output_file=OUT_FILE_NAME, max_lines=200):
     with open(output_file) as out:
         out_reader = DictReader(out, fieldnames=FIELDS, dialect='excel-tab')
         rows = [r for r in out_reader]

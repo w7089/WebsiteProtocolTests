@@ -1,0 +1,13 @@
+version: "3.2"
+
+services:
+  tests:
+    build:
+      context: .
+    image: website-tests
+    container_name: 'website-tests'
+    command: ["python3", "main.py"]
+    volumes:
+        - ./latest_runs.json:/latest_runs.json
+        - ./out.tsv:/out.tsv
+        - ./run.log:/run.log
