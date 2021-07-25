@@ -29,4 +29,5 @@ To see `DEBUG` messages run:
 ## No python 3.8 installed? Run with docker and docker-compose
 
 - clone the repository and `cd` into it
+- `touch out.tsv run.log latest_runs.json`
 - `docker-compose up`

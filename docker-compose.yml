@@ -8,6 +8,6 @@ services:
     container_name: 'website-tests'
     command: ["python3", "main.py"]
     volumes:
-        - ./latest_runs.json:/latest_runs.json
-        - ./out.tsv:/out.tsv
-        - ./run.log:/run.log
+        - ${PWD}/latest_runs.json:/latest_runs.json
+        - ${PWD}/out.tsv:/out.tsv
+        - ${PWD}/run.log:/run.log

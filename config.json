@@ -79,5 +79,32 @@
           }
         },
       "smtp" : {}
-    }
+    },
+    "yahoo.com":
+      {
+        "dns":
+          {
+            "resolve": {}
+          }
+        ,
+        "http":
+          {
+            "latency": {
+              "threshold" : 0.01,
+              "args" : {
+                "runs" : 1,
+                "wait_between_run" : 0.5
+              }
+            }
+          }
+        ,
+        "https":
+          {
+            "latency": {
+              "threshold" : 0.01,
+              "args": {}
+            }
+          },
+        "smtp" : {}
+      }
 }

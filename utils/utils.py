@@ -44,7 +44,7 @@ def rec_dd():
 
 
 def get_previous_runs(runs_file_name=PREVIOUS_RUNS_JSON):
-    if Path(runs_file_name).exists():
+    if Path(runs_file_name).exists() and Path(runs_file_name).stat().st_size != 0:
         with open(runs_file_name) as runs_file:
             previous_runs = json.load(runs_file)
             return previous_runs
